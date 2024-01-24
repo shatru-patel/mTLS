@@ -11,8 +11,8 @@ import (
 
 func main() {
 	log.SetFlags(log.Lshortfile)
-	// certPath := "../certs/client.crt"
-	// keyPath := "../certs/client.key"
+	certPath := "../certs/client.crt"
+	keyPath := "../certs/client.key"
 	cert, err := ioutil.ReadFile("../certs/ca.crt")
 	if err != nil {
 		log.Fatalf("Failed to read certificate file: %v", err)
@@ -21,32 +21,20 @@ func main() {
 	caCertPool := x509.NewCertPool()
 	caCertPool.AppendCertsFromPEM(cert)
 
-	tlsConfig := &tls.Config{
-		RootCAs: caCertPool,
+	certs, err := tls.LoadX509KeyPair(certPath, keyPath)
+	if err != nil {
+		log.Println(err)
+		return
 	}
 
-	tr := &http.Transport{
-		TLSClientConfig: tlsConfig,
+	client := &http.Client{
+		Transport: &http.Transport{
+			TLSClientConfig: &tls.Config{
+				RootCAs:      caCertPool,
+				Certificates: []tls.Certificate{certs},
+			},
+		},
 	}
-
-	client := &http.Client{Transport: tr}
-
-	// caPath := "ca.key"
-
-	// cert, err := tls.LoadX509KeyPair(certPath, keyPath)
-	// if err != nil {
-	// 	log.Println(err)
-	// 	return
-	// }
-
-	// client := &http.Client{
-	// 	Transport: &http.Transport{
-	// 		TLSClientConfig: &tls.Config{
-	// 			Certificates:       []tls.Certificate{cert},
-	// 			InsecureSkipVerify: false,
-	// 		},
-	// 	},
-	// }
 
 	resp, err := client.Get("https://localhost:2083/hello")
 	if err != nil {
