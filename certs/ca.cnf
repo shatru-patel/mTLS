@@ -16,4 +16,4 @@ emailAddress=		shatru.prakas@veltris.com
 [v3_ext]
 keyUsage = critical,digitalSignature,keyEncipherment
 extendedKeyUsage = critical,serverAuth,clientAuth
-subjectAltName = DNS:localhost
+subjectAltName = DNS:prometheus.nms.pmn-dev.wavelabs.in
